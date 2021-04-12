@@ -1,0 +1,5 @@
+2021-04-12 23:41:18.226 INFO  --- [StartupInfoLogger.java:55][restartedMain] - Starting BackEndApplication using Java 16 on life4gal-desktop with PID 41451 (/home/life4gal/Code/Java/springboot-vue/back-end/target/classes started by life4gal in /home/life4gal/Code/Java/springboot-vue/back-end)
+2021-04-12 23:41:18.234 INFO  --- [SpringApplication.java:662][restartedMain] - No active profile set, falling back to default profiles: default
+2021-04-12 23:41:19.603 WARN  --- [ThymeleafAutoConfiguration.java:105][restartedMain] - Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)
+2021-04-12 23:41:19.674 INFO  --- [StartupInfoLogger.java:61][restartedMain] - Started BackEndApplication in 1.784 seconds (JVM running for 3.1)
+2021-04-12 23:46:40.208 WARN  --- [DispatcherServlet.java:1271][http-nio-8080-exec-1] - No mapping for GET /index.html

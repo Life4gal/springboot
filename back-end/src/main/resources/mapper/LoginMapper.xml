@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.springboot_vue.backend.dao.LoginDao">
+
+	<select id="getUser" resultType="com.alibaba.fastjson.JSONObject">
+		SELECT u.id       as userId,
+		       u.username as username,
+		       u.password as password,
+		       u.nickname as nickName
+		FROM sys_user as u
+		WHERE u.username = #{username}
+		  AND u.password = #{password}
+		  AND u.delete_status = '1'
+	</select>
+
+</mapper>
