@@ -1,51 +1,21 @@
 package com.springboot_vue.backend.service;
 
-import com.alibaba.fastjson.JSONObject;
+import com.springboot_vue.backend.entity.User;
+
+import java.util.List;
 
 public interface UserService {
-	/**
-	 * 用户列表
-	 */
-	JSONObject listUser(JSONObject jsonObject);
 
-	/**
-	 * 查询所有的角色
-	 * 在添加/修改用户的时候要使用此方法
-	 */
-	JSONObject getAllRoles();
+	List<User> findAll();
 
-	/**
-	 * 添加用户
-	 */
-	JSONObject addUser(JSONObject jsonObject);
+	User getUserByAccount(String account);
 
-	/**
-	 * 修改用户
-	 */
-	JSONObject updateUser(JSONObject jsonObject);
+	User getUserById(Long id);
 
-	/**
-	 * 角色列表
-	 */
-	JSONObject listRole();
+	Long saveUser(User user);
 
-	/**
-	 * 查询所有权限, 给角色分配权限时调用
-	 */
-	JSONObject listAllPermission();
+	Long updateUser(User user);
 
-	/**
-	 * 添加角色
-	 */
-	JSONObject addRole(JSONObject jsonObject);
+	void deleteUserById(Long id);
 
-	/**
-	 * 修改角色
-	 */
-	JSONObject updateRole(JSONObject jsonObject);
-
-	/**
-	 * 删除角色
-	 */
-	JSONObject deleteRole(JSONObject jsonObject);
 }

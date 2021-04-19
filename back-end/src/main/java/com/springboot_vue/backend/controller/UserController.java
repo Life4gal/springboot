@@ -1,95 +1,117 @@
 package com.springboot_vue.backend.controller;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.support.spring.annotation.FastJsonFilter;
+import com.alibaba.fastjson.support.spring.annotation.FastJsonView;
+import com.springboot_vue.backend.common.annotation.LogAnnotation;
+import com.springboot_vue.backend.common.constant.Base;
+import com.springboot_vue.backend.common.constant.ResultCode;
+import com.springboot_vue.backend.common.result.Result;
+import com.springboot_vue.backend.common.util.UserUtils;
+import com.springboot_vue.backend.entity.User;
 import com.springboot_vue.backend.service.UserService;
-import com.springboot_vue.backend.util.CommonUtil;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping(value = "/users")
 public class UserController {
+
 	@Autowired
 	private UserService userService;
 
-	/**
-	 * 查询用户列表
-	 */
-	@RequiresPermissions("user:list")
-	@GetMapping("/list")
-	public JSONObject listUser(HttpServletRequest request) {
-		return userService.listUser(CommonUtil.request2Json(request));
+	@GetMapping
+	@LogAnnotation(module = "用户", operation = "获取所有用户")
+	@RequiresRoles(Base.ROLE_ADMIN)
+	public Result listUsers() {
+		List<User> users = userService.findAll();
+
+		return Result.success(users);
 	}
 
-	@RequiresPermissions("user:add")
-	@PostMapping("/addUser")
-	public JSONObject addUser(@RequestBody JSONObject requestJson) {
-		CommonUtil.hasAllRequired(requestJson, "username, password, nickname,   roleId");
-		return userService.addUser(requestJson);
+	@GetMapping("/{id}")
+	@LogAnnotation(module = "用户", operation = "根据id获取用户")
+	@RequiresRoles(Base.ROLE_ADMIN)
+	public Result getUserById(@PathVariable("id") Long id) {
+
+		Result r = new Result();
+
+		if (null == id) {
+			r.setResultCode(ResultCode.PARAM_IS_BLANK);
+			return r;
+		}
+
+		User user = userService.getUserById(id);
+
+		r.setResultCode(ResultCode.SUCCESS);
+		r.setData(user);
+		return r;
 	}
 
-	@RequiresPermissions("user:update")
-	@PostMapping("/updateUser")
-	public JSONObject updateUser(@RequestBody JSONObject requestJson) {
-		CommonUtil.hasAllRequired(requestJson, " nickname,   roleId, deleteStatus, userId");
-		return userService.updateUser(requestJson);
+	@GetMapping("/currentUser")
+	@FastJsonView(
+			include = {@FastJsonFilter(clazz = User.class, props = {"id", "account", "nickname", "avatar"})})
+	@LogAnnotation(module = "用户", operation = "获取当前登录用户")
+	public Result getCurrentUser(HttpServletRequest request) {
+
+		Result r = new Result();
+
+		User currentUser = UserUtils.getCurrentUser();
+
+		r.setResultCode(ResultCode.SUCCESS);
+		r.setData(currentUser);
+		return r;
 	}
 
-	@RequiresPermissions(value = {"user:add", "user:update"}, logical = Logical.OR)
-	@GetMapping("/getAllRoles")
-	public JSONObject getAllRoles() {
-		return userService.getAllRoles();
+	@PostMapping("/create")
+	@RequiresRoles(Base.ROLE_ADMIN)
+	@LogAnnotation(module = "用户", operation = "添加用户")
+	public Result saveUser(@Validated @RequestBody User user) {
+
+		Long userId = userService.saveUser(user);
+
+		Result r = Result.success();
+		r.simple().put("userId", userId);
+		return r;
 	}
 
-	/**
-	 * 角色列表
-	 */
-	@RequiresPermissions("role:list")
-	@GetMapping("/listRole")
-	public JSONObject listRole() {
-		return userService.listRole();
+	@PostMapping("/update")
+	@RequiresRoles(Base.ROLE_ADMIN)
+	@LogAnnotation(module = "用户", operation = "修改用户")
+	public Result updateUser(@RequestBody User user) {
+		Result r = new Result();
+
+		if (null == user.getId()) {
+			r.setResultCode(ResultCode.USER_NOT_EXIST);
+			return r;
+		}
+
+		Long userId = userService.updateUser(user);
+
+		r.setResultCode(ResultCode.SUCCESS);
+		r.simple().put("userId", userId);
+		return r;
 	}
 
-	/**
-	 * 查询所有权限, 给角色分配权限时调用
-	 */
-	@RequiresPermissions("role:list")
-	@GetMapping("/listAllPermission")
-	public JSONObject listAllPermission() {
-		return userService.listAllPermission();
+	@GetMapping("/delete/{id}")
+	@RequiresRoles(Base.ROLE_ADMIN)
+	@LogAnnotation(module = "用户", operation = "删除用户")
+	public Result deleteUserById(@PathVariable("id") Long id) {
+		Result r = new Result();
+
+		if (null == id) {
+			r.setResultCode(ResultCode.PARAM_IS_BLANK);
+			return r;
+		}
+
+		userService.deleteUserById(id);
+
+		r.setResultCode(ResultCode.SUCCESS);
+		return r;
 	}
 
-	/**
-	 * 新增角色
-	 */
-	@RequiresPermissions("role:add")
-	@PostMapping("/addRole")
-	public JSONObject addRole(@RequestBody JSONObject requestJson) {
-		CommonUtil.hasAllRequired(requestJson, "roleName,permissions");
-		return userService.addRole(requestJson);
-	}
-
-	/**
-	 * 修改角色
-	 */
-	@RequiresPermissions("role:update")
-	@PostMapping("/updateRole")
-	public JSONObject updateRole(@RequestBody JSONObject requestJson) {
-		CommonUtil.hasAllRequired(requestJson, "roleId,roleName,permissions");
-		return userService.updateRole(requestJson);
-	}
-
-	/**
-	 * 删除角色
-	 */
-	@RequiresPermissions("role:delete")
-	@PostMapping("/deleteRole")
-	public JSONObject deleteRole(@RequestBody JSONObject requestJson) {
-		CommonUtil.hasAllRequired(requestJson, "roleId");
-		return userService.deleteRole(requestJson);
-	}
 }
