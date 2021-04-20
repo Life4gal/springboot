@@ -26,7 +26,7 @@ public class UploadController {
 	private static final Logger logger = LoggerFactory.getLogger(UploadController.class);
 
 
-	@Value("${me.upload.path}")
+	@Value("${upload.path}")
 	private String baseFolderPath;
 
 	@PostMapping("/upload")

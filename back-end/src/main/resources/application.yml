@@ -1,6 +1,10 @@
 server:
     port: 8888
 
+# upload path
+upload:
+    path: blogFile/
+
 spring:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource
@@ -26,8 +30,8 @@ spring:
             filter:
                 stat:
                     merge-sql: true
-#                    log-slow-sql: true
-#                    slow-sql-millis: 10000
+                    log-slow-sql: true
+                    slow-sql-millis: 10000
             stat-view-servlet:
                 login-username: admin
                 login-password: admin
@@ -38,11 +42,11 @@ spring:
         show-sql: true
         hibernate:
             ddl-auto: update
-#        open-in-view: true
+        open-in-view: true
 
-#    cache:
-#        ehcache:
-#            config: classpath:ehcache.xml
+    cache:
+        ehcache:
+            config: classpath:ehcache.xml
 
     redis:
         database: 0
@@ -50,12 +54,12 @@ spring:
         port: 6379
         password:
         timeout: 10000
-        lettuce:
-            pool:
-                max-active: 8
-                max-wait: -1
-                max-idle: 8
-                min-idle: 0
+#        lettuce:
+#            pool:
+#                max-active: 8
+#                max-wait: -1
+#                max-idle: 8
+#                min-idle: 0
     data:
         redis:
             repositories:
