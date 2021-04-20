@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "upload.path",
+      "type": "java.lang.String",
+      "description": "store path of upload file."
+    }
+  ]
+}
