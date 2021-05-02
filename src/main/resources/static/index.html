@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
+    <link href="/assets/img/eft-favicon.png" rel="shortcut icon"/>
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/css/fileinput.min.css" rel="stylesheet">
+    <link href="/assets/css/glyphicons.css" rel="stylesheet">
+    <script src="/assets/js/popper.min.js"></script>
+    <script src="/assets/js/jquery-3.3.1.js"></script>
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <script src="/assets/js/layer.js"></script>
+    <script src="/assets/js/vue.js"></script>
+    <script src="/assets/js/piexif.min.js"></script>
+    <script src="/assets/js/sortable.min.js"></script>
+    <script src="/assets/js/purify.min.js"></script>
+    <script src="/assets/js/fileinput.min.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/utils.js"></script>
+    <link href="/assets/css/style.css" rel="stylesheet"/>
+    <title>首页</title>
+</head>
+<body id="particles-js">
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-toggler fixed-top">
+    <img class="navbar-brand" src="/assets/img/eft-favicon.png" style="width: 2rem;height: 2.5rem;"/>
+    <button class="navbar-toggler" data-target="#collapsibleNavbar" data-toggle="collapse" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="pill" href="#resource-tab">资源列表</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#uploaded-tab">我的资源</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#downloaded-tab">我的下载</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#bio-tab">我的资料</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="upload" target="_blank">文件上传</a>
+            </li>
+        </ul>
+    </div>
+    <div class="form-inline w-50">
+        <input class="form-control border-dark bg-dark text-white form-control-sm w-100" id="search"
+               placeholder="搜索" type="search"/>
+    </div>
+</nav>
+<br/><br/><br/>
+<div class="container" id="index">
+    <div class="row justify-content-center">
+        <div class="col-sm-12 col-10 tab-content">
+            <!--资源列表-->
+            <div class="tab-pane active" id="resource-tab">
+                <div class="row content-box rounded">
+                    <div class="col-sm-2 col-4">
+                        <br/>
+                        <select class="form-control content-filter" data-toggle="tooltip" id="category"
+                                title="查找指定分类文件">
+                            <option value="0">全部</option>
+                        </select>
+                        <br/>
+                    </div>
+                    <div class="col-sm-2 col-4">
+                        <br/>
+                        <select class="form-control content-filter" data-toggle="tooltip" id="order-by" title="排序方法">
+                            <option value="id">时间</option>
+                            <option value="download_times">热度</option>
+                            <option value="size">大小</option>
+                        </select>
+                        <br/>
+                    </div>
+                    <div class="col-sm-2 col-4">
+                        <br/>
+                        <select class="form-control content-filter" data-toggle="tooltip" id="order-way" title="排序方式">
+                            <option value="desc">降序</option>
+                            <option value="asc">升序</option>
+                        </select>
+                        <br/>
+                    </div>
+                </div>
+                <br/>
+                <div id="resources-content"></div>
+                <button class="btn btn-link btn-block btn-lg" onclick="offset += 1;getPage();"><b><i
+                        class="glyphicon glyphicon-arrow-down"></i> 获取更多</b></button>
+                <br/><br/>
+            </div>
+            <!--我的资源-->
+            <div class="tab-pane" id="uploaded-tab">
+                <div id="uploaded-content"></div>
+                <button class="btn btn-link btn-block btn-lg" onclick="offset += 1;getPage();"><b><i
+                        class="glyphicon glyphicon-arrow-down"></i> 获取更多</b></button>
+                <br/><br/>
+            </div>
+            <div class="tab-pane" id="downloaded-tab">
+                <div id="downloaded-content"></div>
+                <button class="btn btn-link btn-block btn-lg" onclick="offset += 1;getPage();"><b><i
+                        class="glyphicon glyphicon-arrow-down"></i> 获取更多</b></button>
+                <br/><br/>
+            </div>
+            <!--我的资料-->
+            <div class="tab-pane text-left" id="bio-tab">
+                <!--权限和登陆信息-->
+                <div class="row content-box rounded">
+                    <div class="col-sm-1 col-1 col-md-1"></div>
+                    <div class="col-sm-11 col-11 col-md-6">
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-3 col-5 text-right">
+                                <span class="text-right">权限：</span>
+                            </div>
+                            <div class="col-sm-6 col-7 text-left">
+                                <div v-if="permission>1">
+                                    <a href="admin" target="_blank">管理员</a>
+                                </div>
+                                <div v-else>
+                                    <span class="text-left">普通用户</span>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-3 col-5 text-right">
+                                <span class="text-right">登陆时间：</span>
+                            </div>
+                            <div class="col-sm-6 col-7 text-left">
+                                <span class="text-left">{{loginTime}}</span>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <br/>
+                <!--基本信息-->
+                <div class="row content-box rounded">
+                    <div class="col-sm-1 col-1 col-md-1"></div>
+                    <div class="col-sm-11 col-11 col-md-6">
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-3 col-5 text-right">
+                                <img class="rounded-circle avatar" id="avatar" onclick="showAvatarModal();"
+                                     src="/assets/img/default-user.jpg"/>
+                            </div>
+                            <div class="col-sm-6 col-7 text-left padding-top-3">
+                                <h3>{{username}}</h3>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-3 col-5 text-right padding-top-1">
+                                <span class="text-right">真实姓名：</span>
+                            </div>
+                            <div class="col-sm-6 col-7 text-left">
+                                <input class="form-control" id="real-name" placeholder="我的真实姓名" type="text"/>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-3 col-5 text-right padding-top-1">
+                                <span class="text-right">邮箱：</span>
+                            </div>
+                            <div class="col-sm-6 col-7 text-left">
+                                <input class="form-control email" id="email" placeholder="我的邮箱" type="email"/>
+                                <label class="form-check-label text-danger">{{emailErrorTip}}</label>
+                            </div>
+                        </div>
+                        <div class="row verify-code-div" style="display: none;">
+                            <div class="col-sm-8 offset-sm-1 offset-2 col-10 row">
+                                <div class="col-sm-7 col-6 col-md-7">
+                                    <input class="form-control email-verify-code" id="email-verify-code" maxlength="6"
+                                           placeholder="收到的6位验证码"
+                                           type="number"/>
+                                    <label class="form-check-label text-danger">{{emailVerifyStatus}}</label>
+                                </div>
+                                <div class="col-sm-4 col-md-54 col-5 offset-1 text-right padding-0">
+                                    <button class="btn btn-outline-info sendVerifyCode btn-block">发送验证码</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1 col-2"></div>
+                            <div class="col-sm-8 col-10 text-right">
+                                <button class="btn btn-primary btn-block" onclick="saveInfo();">保存</button>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <br/>
+                <!--修改密码-->
+                <div class="row content-box rounded">
+                    <div class="col-sm-1 col-1 col-md-1"></div>
+                    <div class="col-sm-11 col-11 col-md-6">
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-3 col-5 text-right padding-top-1">
+                                <span class="text-right">旧密码：</span>
+                            </div>
+                            <div class="col-sm-6 col-7 text-left">
+                                <input class="form-control" id="old-password" placeholder="旧密码" type="password"/>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-3 col-5 text-right padding-top-1">
+                                <span class="text-right">新密码：</span>
+                            </div>
+                            <div class="col-sm-6 col-7 text-left">
+                                <input class="password form-control" id="new-password" placeholder="新密码"
+                                       type="password"/>
+                                <label class="form-check-label text-danger">{{passwordVerify}}</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3 col-5 text-right padding-top-1">
+                                <span class="text-right">确认新密码：</span>
+                            </div>
+                            <div class="col-sm-6 col-7 text-left">
+                                <input class="form-control confirm-password" id="confirm-new-password" placeholder="确认新密码"
+                                       type="password"/>
+                                <label class="form-check-label text-danger">{{passwordConfirm}}</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-1 col-2"></div>
+                            <div class="col-sm-8 col-10 text-right">
+                                <button class="btn btn-warning btn-block" onclick="updatePassword();">修改密码</button>
+                                <br/>
+                                <a class="btn btn-block btn-danger" href="signin.html#reset" target="_blank">忘记密码</a>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+                <div class="row"><br/></div>
+            </div>
+        </div>
+    </div>
+    <div class="row text-center" id="footer"></div>
+</div>
+
+<!--文本编辑模态框-->
+<div class="modal fade" id="edit-file-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">文件信息编辑</h4>
+                <button class="close" data-dismiss="modal" type="button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-sm-9">
+                        <input id="edit-file-id" type="hidden" value="0">
+                        <input class="form-control" data-toggle="tooltip" id="edit-file-name" placeholder="文件名" title="文件名"
+                               type="text"/>
+                    </div>
+                    <div class="col-sm-3">
+                        <select class="form-control" data-toggle="tooltip" id="edit-file-category" title="文件分类">
+                            <option value="0">未分类</option>
+                        </select>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-sm-12 col-12">
+                        <input class="form-control" data-toggle="tooltip" id="edit-file-tag" placeholder="文件标签，多个文件标签使用空格分隔"
+                               title="文件标签，多个文件标签使用空格分隔" type="text">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-12 col-sm-12">
+                        <textarea class="form-control" data-toggle="tooltip" id="edit-file-description" placeholder="文件描述"
+                                  title="文件描述"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveFileInfo();" type="button">保存</button>
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">关闭</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="/assets/js/particles.js"></script>
+<script src="/assets/js/default.js"></script>
+<script src="/assets/js/index.js"></script>
+</body>
+</html>
