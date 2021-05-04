@@ -1,4 +1,4 @@
-var signinItem = new Vue({
+const signinItem = new Vue({
     el: "#signin-div",
     data: {
         emailVerify: false,
@@ -15,11 +15,11 @@ if (!window.location.href.replace(/https?:\/\/[a-zA-Z0-9.]*(:\d+)?/g, "").starts
 }
 
 function reset() {
-    var email = $("#res-email").val();
-    var code = $("#res-email-verify").val();
-    var password = $("#res-password").val();
-    var passwordConfirm = $("#res-confirm-password").val();
-    var isValid = isEmail(email) && 6 === code.length && checkPassword(password, passwordConfirm);
+    const email = $("#res-email").val();
+    const code = $("#res-email-verify").val();
+    const password = $("#res-password").val();
+    const passwordConfirm = $("#res-confirm-password").val();
+    const isValid = isEmail(email) && 6 === code.length && checkPassword(password, passwordConfirm);
     if (submit() && isValid) {
         layer.load(1);
         $.ajax({
@@ -28,7 +28,7 @@ function reset() {
             data: {email: email, code: code, password: password},
             success: function (data) {
                 layer.closeAll();
-                var json = JSON.parse(data);
+                const json = JSON.parse(data);
                 if (json.status === "success") {
                     alerts("密码重置成功");
                     switchToLogin();
@@ -45,12 +45,12 @@ function reset() {
 function register() {
     /** @namespace globalConfig.allowRegister */
     if (globalConfig.allowRegister) {
-        var username = $("#username").val();
-        var email = $("#email").val();
-        var verifyCode = $("#email-verify-code").val();
-        var password = $("#reg-password").val();
-        var passwordConfirm = $("#confirm-password").val();
-        var canRegister = username.match(userConfig.usernameMatch.pattern) && (!userConfig.emailVerify || 6 === verifyCode.length) && isEmail(email) && checkPassword(password, passwordConfirm);
+        const username = $("#username").val();
+        const email = $("#email").val();
+        const verifyCode = $("#email-verify-code").val();
+        const password = $("#reg-password").val();
+        const passwordConfirm = $("#confirm-password").val();
+        const canRegister = username.match(userConfig.usernameMatch.pattern) && (!userConfig.emailVerify || 6 === verifyCode.length) && isEmail(email) && checkPassword(password, passwordConfirm);
         if (submit() && canRegister) {
             layer.load(1);
             $.post("/user/register", {
@@ -60,7 +60,7 @@ function register() {
                 code: verifyCode
             }, function (data) {
                 layer.closeAll();
-                var json = JSON.parse(data);
+                const json = JSON.parse(data);
                 if (json.status === "success") {
                     alerts("注册成功");
                     switchToLogin();
@@ -79,9 +79,9 @@ function register() {
 function login() {
     /** @namespace globalConfig.allowLogin */
     if (globalConfig.allowLogin) {
-        var username = $("#loginName").val();
-        var password = $("#password").val();
-        var remember = document.getElementById("remember").checked;
+        const username = $("#loginName").val();
+        const password = $("#password").val();
+        const remember = document.getElementById("remember").checked;
         if (username && password) {
             layer.load(1);
             $.ajax({
@@ -92,10 +92,10 @@ function login() {
                     token: getCookie("token")
                 }, success: function (data) {
                     layer.closeAll();
-                    var json = JSON.parse(data);
+                    const json = JSON.parse(data);
                     if (json.status === "success") {
                         if (remember) {
-                            var exp = new Date();
+                            const exp = new Date();
                             document.cookie = "token=" + json.token + ";expires=" + exp.setTime(exp.getTime() + 30 * 24 * 60 * 60 * 1000);
                         }
                         window.location.href = "/index";
@@ -144,10 +144,10 @@ function submit() {
 $(document).ready(
     function () {
         $("#username").keyup(function () {
-                var username = event.srcElement.value;
+                const username = event.srcElement.value;
                 if (username.match(userConfig.usernameMatch.pattern)) {
                     $.get("/user/username/exists", {username: username}, function (data) {
-                        var json = JSON.parse(data);
+                        const json = JSON.parse(data);
                         /** @namespace json.exists */
                         signinItem.description = json.exists ? "用户名已经存在" : "";
                     });
@@ -157,11 +157,11 @@ $(document).ready(
             }
         );
         $(".email").keyup(function () {
-            var email = event.srcElement.value;
+            const email = event.srcElement.value;
             if (isEmail(email)) {
                 if (location.hash === "#register") {
                     $.get("/user/email/exists", {email: email}, function (data) {
-                        var json = JSON.parse(data);
+                        const json = JSON.parse(data);
                         signinItem.emailErrorTip = json.exists ? "该邮箱已经被注册啦" : "";
                     });
                 }
@@ -171,7 +171,7 @@ $(document).ready(
             }
         });
         $(".password").keyup(function () {
-            var len = event.srcElement.value.length;
+            const len = event.srcElement.value.length;
             if (len >= userConfig.password.minLength && len <= userConfig.password.maxLength) {
                 signinItem.passwordVerify = "";
             } else {
@@ -179,16 +179,16 @@ $(document).ready(
             }
         });
         $(".confirm-password").keyup(function () {
-            var ele = event.srcElement;
+            const ele = event.srcElement;
             signinItem.passwordConfirm = (ele.value === $(ele).siblings(".password").val()) ? "" : "两次输入的密码不一样";
         });
         $(".sendVerifyCode").click(function () {
-            var eventSrc = event.srcElement;
+            const eventSrc = event.srcElement;
             console.info("test");
             sendVerifyCode($(eventSrc).parents(location.hash + "-div").find(".email").val(), eventSrc);
         });
         $(".email-verify-code").keyup(function () {
-            var code = event.srcElement.value;
+            const code = event.srcElement.value;
             if (code.length === 6) {
                 $.ajax({
                     url: "/common/" + code + "/verification", type: "PUT", success: function (data) {

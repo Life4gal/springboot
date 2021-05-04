@@ -1,15 +1,15 @@
-var footer = "<nav class='navbar navbar-default fixed-bottom justify-content-center' style='z-index:-1;'><div class='navbar-inner navbar-content-center text-center'><p>Powered by eft (easy file transfer).</p></div></nav>";
+const footer = "<nav class='navbar navbar-default fixed-bottom justify-content-center' style='z-index:-1;'><div class='navbar-inner navbar-content-center text-center'><p>Powered by eft (easy file transfer).</p></div></nav>";
 
-var globalConfig = {};
+let globalConfig = {};
 
-var userConfig = {};
+let userConfig = {};
 
 /**
  * 服务器响应提示
  */
 function responseTip(data) {
     layer.closeAll();
-    var json = JSON.parse(data);
+    const json = JSON.parse(data);
     if (json.status === "success") {
         layer.msg("保存成功");
     } else {
@@ -26,7 +26,7 @@ function sendVerifyCode(email, eventSrc) {
         layer.load(1);
         $.post("/common/" + email + "/code", function (data) {
             layer.closeAll();
-            var json = JSON.parse(data);
+            const json = JSON.parse(data);
             if (json.status === "success") {
                 layer.msg("发送成功，请前往邮箱查看");
                 $(eventSrc).attr("disabled", "disabled");
@@ -60,11 +60,11 @@ $(document).ready(function () {
         if (globalConfig.background.useImage) {
             /** @namespace globalConfig.background.listGenerator */
             if (globalConfig.background.listGenerator.enable) {
-                var start = globalConfig.background.listGenerator.start;
-                var end = globalConfig.background.listGenerator.end;
-                var len = end - start + 1;
-                var list = new Array(len);
-                for (var i = 0; i < len; i++) {
+                let start = globalConfig.background.listGenerator.start;
+                const end = globalConfig.background.listGenerator.end;
+                const len = end - start + 1;
+                const list = new Array(len);
+                for (let i = 0; i < len; i++) {
                     /** @namespace globalConfig.background.listGenerator.suffix */
                     list[i] = globalConfig.background.listGenerator.prefix + (start++) + globalConfig.background.listGenerator.suffix;
                 }
@@ -83,7 +83,7 @@ $(document).ready(function () {
 
 function changeBackgroundImage() {
     if (globalConfig.background.useImage) {
-        var idx = 0;
+        let idx;
         if (globalConfig.background.random) {
             idx = Math.floor(Math.random() * globalConfig.background.imageList.length);
         } else {
@@ -91,9 +91,9 @@ function changeBackgroundImage() {
             idx = globalConfig.background.imageIndex;
         }
         /** @namespace globalConfig.background.imageList */
-        var url = globalConfig.background.imageList[idx];
+        const url = globalConfig.background.imageList[idx];
         if (typeof url !== "undefined") {
-            var body = $("body");
+            const body = $("body");
             $(body).css("background", "url('" + url + "') no-repeat center center fixed");
             $(body).css("background-size", "cover");
         }
@@ -101,25 +101,25 @@ function changeBackgroundImage() {
 }
 
 function setCSS() {
-    for (var m = 0; m < globalConfig.css.length; m++) {
-        var node = globalConfig.css[m];
-        var tempElement = node.selector;
-        var element = [];
+    for (let m = 0; m < globalConfig.css.length; m++) {
+        const node = globalConfig.css[m];
+        const tempElement = node.selector;
+        let element = [];
         if (tempElement instanceof Array) {
             element = tempElement;
         } else {
             element = element.concat(tempElement);
         }
-        var tempItem = node.style;
-        var item = [];
+        const tempItem = node.style;
+        let item = [];
         if (tempItem instanceof Array) {
             item = tempItem;
         } else {
             item = item.concat(tempItem);
         }
-        for (var j = 0; j < element.length; j++) {
-            for (var k = 0; k < item.length; k++) {
-                var css = item[k].split(":");
+        for (let j = 0; j < element.length; j++) {
+            for (let k = 0; k < item.length; k++) {
+                const css = item[k].split(":");
                 $(element[j]).css(css[0].trim(), rtrim(css[1].trim(), ";"));
             }
         }

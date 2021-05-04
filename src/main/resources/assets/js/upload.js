@@ -13,7 +13,7 @@ $("#file-input").fileinput({
     },
     maxFilePreviewSize: 51200
 }).on('fileuploaded', function (event, data, previewId, index) {
-    var json = data.response;
+    const json = data.response;
     if (json.status === "success") {
         alerts("上传成功");
     } else {
@@ -28,8 +28,8 @@ $(document).on('ready', function () {
 });
 
 $.get("/category/all", function (data) {
-    var json = JSON.parse(data);
-    var option = "";
+    const json = JSON.parse(data);
+    let option = "";
     $.each(json, function (i, category) {
         option += "<option value='" + category.id + "'>" + category.name + "</option>";
     });

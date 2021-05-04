@@ -1,4 +1,4 @@
-var app = new Vue({
+const app = new Vue({
     el: "#index",
     data: {
         username: "",
@@ -11,13 +11,15 @@ var app = new Vue({
     }
 });
 
-var search = "";
+let search = "";
 
 Vue.component('paging-more', {
     template: '<button class="btn btn-link btn-block btn-lg" onclick="offset += 1;getPage();"><b>获取更多</b></button><br/><br/>'
 });
 
-var userInfo = {};
+let userInfo = {};
+
+let currentTab;
 
 function getPage() {
     if (currentTab === "#downloaded-content") {
@@ -33,9 +35,9 @@ function getPage() {
  * 保存用户信息
  */
 function saveInfo() {
-    var email = $("#email").val();
+    const email = $("#email").val();
     if (isEmail(email)) {
-        var code = $("#email-verify-code").val();
+        const code = $("#email-verify-code").val();
         if (!userConfig.emailVerify || code.length === 6 || email === userInfo.email) {
             layer.load(1);
             $.ajax({
@@ -50,7 +52,7 @@ function saveInfo() {
                 },
                 success: function (data) {
                     layer.closeAll();
-                    var json = JSON.parse(data);
+                    const json = JSON.parse(data);
                     userInfo.email = json.email;
                     alerts(json.message);
                 }
@@ -67,9 +69,9 @@ function saveInfo() {
  * 更新密码
  */
 function updatePassword() {
-    var oldPassword = $("#old-password").val();
-    var newPassword = $("#new-password").val();
-    var confirmNewPassword = $("#confirm-new-password").val();
+    const oldPassword = $("#old-password").val();
+    const newPassword = $("#new-password").val();
+    const confirmNewPassword = $("#confirm-new-password").val();
     if (oldPassword && checkPassword(newPassword, confirmNewPassword)) {
         layer.load(1);
         $.ajax({
@@ -78,7 +80,7 @@ function updatePassword() {
             data: {oldPassword: oldPassword, newPassword: newPassword},
             success: function (data) {
                 layer.closeAll();
-                var json = JSON.parse(data);
+                const json = JSON.parse(data);
                 if (json.status === "success") {
                     alerts("密码修改成功");
                     location.href = "/signin.html#login";
@@ -97,7 +99,7 @@ function getUserInfo() {
     $.get("/user/info", function (data) {
         layer.closeAll();
         try {
-            var json = JSON.parse(data);
+            const json = JSON.parse(data);
             userInfo = json;
             app.permission = json.permission;
             /** @namespace app.lastLoginTime */
@@ -131,7 +133,7 @@ function showAvatarModal() {
         maxFileCount: 1,
         maxFilePreviewSize: 10485760
     }).on('fileuploaded', function (event, data) {
-        var json = data.response;
+        const json = data.response;
         if (JSON.stringify(json).indexOf("success") > 0) {
             $("#avatar").attr("src", json.success);
         } else {
@@ -158,11 +160,11 @@ $(document).ready(function () {
         getResource(getOrderBy());
     });
     $(".email-verify-code").keyup(function () {
-        var code = event.srcElement.value;
+        const code = event.srcElement.value;
         if (code.length === 6) {
             $.ajax({
                 url: "/common/" + code + "/verification", type: "PUT", success: function (data) {
-                    var json = JSON.parse(data);
+                    const json = JSON.parse(data);
                     app.emailVerifyStatus = json.status === "success" ? "" : "验证码错误";
                 }
             });
@@ -174,7 +176,7 @@ $(document).ready(function () {
         checkEmailChange(event.srcElement.value);
     });
     $(".password").keyup(function () {
-        var len = event.srcElement.value.length;
+        const len = event.srcElement.value.length;
         if (len >= userConfig.password.minLength && len <= userConfig.password.maxLength) {
             app.passwordVerify = "";
         } else {
@@ -214,10 +216,10 @@ function getTabContent(href) {
     }
 }
 
-var offset = 0;
+let offset = 0;
 
 function checkEmailChange(email) {
-    var isChange = email !== userInfo.email;
+    const isChange = email !== userInfo.email;
     if (isEmail(email)) {
         if (isChange) {
             $.get("/user/email/exists", {email: email}, function (data) {
@@ -241,7 +243,7 @@ $.get("/config/user", function (data) {
     userConfig = JSON.parse(data);
 });
 
-var currentTab = "#resources-content";
+currentTab = "#resources-content";
 
 function getUserDownloaded() {
     currentTab = "#downloaded-content";
@@ -284,7 +286,7 @@ function getResource(orderBy) {
 }
 
 function setResources(resources, tabId) {
-    var contentHtml = "";
+    let contentHtml = "";
     search = "";
     if (resources.length < 1) {
         offset -= 1;
@@ -302,8 +304,8 @@ function setResources(resources, tabId) {
              * 暂时不考虑查看次数
              * @code &emsp;查看次数：<b>" + resource.checkTimes + "</b>
              */
-            var isDownloaded = "#downloaded-content" === tabId;
-            var date = isDownloaded ? resource.downloadTime : resource.createTime;
+            const isDownloaded = "#downloaded-content" === tabId;
+            const date = isDownloaded ? resource.downloadTime : resource.createTime;
             contentHtml += "<div class='row content-box rounded' data-id='" + resource.id + "'><div class='col-12 col-sm-12'><br/><div class='row'>" +
                 (isMobile() ? "" : "<div class='col-sm-1 col-0'><img src='" + (resource.avatar ? resource.avatar : "/assets/img/default-user.jpg") + "' class='rounded avatar'/></div>") +
                 "<div class='col-sm-11 col-12'><h4><a data-toggle='tooltip' class='visit-url' href='" + resource.visitUrl + "' target='_blank' data-description='" + resource.description + "' title='" + resource.description + "'>" + resource.fileName + "</a>" +
@@ -322,10 +324,10 @@ function setResources(resources, tabId) {
     }
 }
 
-var srcContentBox;
+let srcContentBox;
 
 function editFile() {
-    var contentBox = $(event.srcElement).parents(".content-box");
+    const contentBox = $(event.srcElement).parents(".content-box");
     srcContentBox = contentBox;
     $("#edit-file-id").val($(contentBox).attr("data-id"));
     $("#edit-file-name").val($(contentBox).find("a.visit-url").text());
@@ -336,10 +338,10 @@ function editFile() {
 }
 
 function saveFileInfo() {
-    var name = $("#edit-file-name").val();
-    var category = $("#edit-file-category").val();
-    var tag = $("#edit-file-tag").val();
-    var description = $("#edit-file-description").val();
+    const name = $("#edit-file-name").val();
+    const category = $("#edit-file-category").val();
+    const tag = $("#edit-file-tag").val();
+    const description = $("#edit-file-description").val();
     if (isEmpty(name)) {
         alerts("文件名不能为空");
     } else {
@@ -355,13 +357,13 @@ function saveFileInfo() {
             },
             success: function (data) {
                 layer.closeAll();
-                var json = JSON.parse(data);
+                const json = JSON.parse(data);
                 if (json.status === "success") {
                     $(srcContentBox).find("a.visit-url").text(name);
                     $(srcContentBox).find("b.file-category").text(category);
                     $(srcContentBox).find("b.file-tag").text(tag);
                     $(srcContentBox).find("a.visit-url").attr("data-description", description);
-                    var href = $(srcContentBox).find("a.visit-url").attr("href");
+                    const href = $(srcContentBox).find("a.visit-url").attr("href");
                     $(srcContentBox).find("a.visit-url").attr("href", href.substr(0, href.lastIndexOf("/") + 1) + name);
                     $("#edit-file-modal").modal("hide");
                     alerts("保存成功");
@@ -375,17 +377,17 @@ function saveFileInfo() {
 }
 
 function removeFile() {
-    var contentBox = $(event.srcElement).parents(".content-box");
+    const contentBox = $(event.srcElement).parents(".content-box");
     layer.confirm('是否确定删除文件【' + $(contentBox).find("a.visit-url").text() + '】', {
         btn: ['确定', '删除'],
         skin: 'layui-layer-molv'
     }, function () {
-        var id = $(contentBox).attr("data-id");
+        const id = $(contentBox).attr("data-id");
         layer.load(1);
         $.ajax({
             url: "/file/" + id, type: "DELETE", success: function (data) {
                 layer.closeAll();
-                var json = JSON.parse(data);
+                const json = JSON.parse(data);
                 if (json.status === "success") {
                     $(contentBox).remove();
                     layer.msg("删除成功");
@@ -401,8 +403,8 @@ function removeFile() {
 }
 
 $.get("/category/all", function (data) {
-    var json = JSON.parse(data);
-    var option = "";
+    const json = JSON.parse(data);
+    let option = "";
     $.each(json, function (i, category) {
         option += "<option value='" + category.name + "'>" + category.name + "</option>";
     });

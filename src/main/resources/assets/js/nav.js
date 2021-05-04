@@ -13,7 +13,7 @@ $(function () {
                 $('.jq-nav-item.jq-nav-show').removeClass('jq-nav-show');
             }
         }
-        var tab = $(this).attr("href");
+        const tab = $(this).attr("href");
         if (tab !== "filemanager") {
             $(".jq-tab").addClass("hide");
             $(tab).removeClass("hide");
@@ -29,7 +29,7 @@ $(function () {
     });
     //nav-mini切换
     $('#mini').on('click', function () {
-        var nav = $(".jq-nav");
+        const nav = $(".jq-nav");
         if ($(nav).hasClass('jq-nav-mini')) {
             $(nav).removeClass('jq-nav-mini');
         } else {
